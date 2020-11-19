@@ -1,0 +1,119 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<br />
+<br />
+<div class="container">
+    <div class="row mt-6">
+        <div class="col-6">
+            <form>
+                <div class="form-group row">
+                    <label class="col-sm-1 col-form-label">Cep: </label>
+                    <div class="col-sm-6">
+                        <input id="cep-input" type="text" class="form-control" required>
+                    </div>
+                </div>
+
+                <div class="col-12 mt-8">
+                    <button id="ws-btn" type="button" class="btn btn-info">Consultar no WS</button>
+                </div>
+                <div class="col-12 mt-4">
+                    <button id="inserir-btn" type="button" class="btn btn-info">Inserir na Database</button>
+                </div>
+                <div class="col-12 mt-4">
+                    <button id="buscar-btn" type="button" class="btn btn-info">Consultar na Database</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="col-6">
+            <span><strong> Origem dos dados: </strong></span>
+            <span id="origem-span"></span> <br />
+
+            <span><strong> Cep: </strong></span>
+            <span id="cep-span"></span> <br />
+
+            <span><strong> Logradouro: </strong></span>
+            <span id="logradouro-span"></span><br />
+
+            <span><strong> Bairro: </strong></span>
+            <span id="bairro-span"></span><br />
+
+            <span><strong> Cidade: </strong></span>
+            <span id="cidade-span"></span><br />
+
+            <span><strong> UF: </strong></span>
+            <span id="uf-span"></span><br />
+
+            <span><strong> Complemento: </strong></span>
+            <span id="complemento-span"></span>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts{ 
+    <script>
+
+        $(document).ready(function () {
+
+            $("#ws-btn").click(function () {
+                var url = "ApplicationTest/BuscarCep?cep=" + $("#cep-input").val();
+
+                ajax({
+                    url: url,
+                    method: 'GET'
+                }).then(result => {
+                    popularCampos('Web Service', result);
+
+                }).catch(result => {
+                    alert(result);
+                });
+            });
+
+            $("#buscar-btn").click(function () {
+                var url = "ApplicationTest/BuscarEndereco?cep=" + $("#cep-input").val();
+
+                ajax({
+                    url: url,
+                    method: 'GET'
+                }).then(result => {
+                    popularCampos('Database', result);
+
+                }).catch(result => {
+                    alert(result);
+                });
+            });
+
+            $("#inserir-btn").click(function () {
+                let url = "ApplicationTest/CadastrarEndereco";
+                let cep = $("#cep-input").val();
+
+                ajax({
+                    url: url,
+                    method: 'POST',
+                    data: { cep: cep }
+                }).then(result => {
+                    alert("Endereço inserido com sucesso!")
+                    console.log(result);
+
+                }).catch(result => {
+                    alert(result);
+                });
+            });
+
+            function popularCampos(origem, dados) {
+                $("#origem-span").text(origem);
+                $("#cep-span").text(dados.cep);
+                $("#logradouro-span").text(dados.logradouro);
+                $("#bairro-span").text(dados.bairro);
+                $("#cidade-span").text(dados.localidade);
+                $("#uf-span").text(dados.uf);
+                $("#complemento-span").text(dados.complemento);
+            }
+
+        });
+
+    </script>
+}
